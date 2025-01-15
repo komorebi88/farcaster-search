@@ -1,10 +1,10 @@
 import { apiBaseUrl } from './config.js';
 
-// デバッグ用（本番環境では無効化）
-const DEBUG = window.location.hostname === 'localhost' ||
+// Debug mode (disabled in production)
+const DEBUG = window.location.hostname === 'localhost' || 
              window.location.hostname === '127.0.0.1';
 
-// DOM要素
+// DOM elements
 const keywordInput = document.getElementById('keyword');
 const minHeartsInput = document.getElementById('minHearts');
 const timeRangeSelect = document.getElementById('timeRange');
@@ -12,17 +12,17 @@ const searchButton = document.getElementById('searchButton');
 const resultsDiv = document.getElementById('results');
 const errorMessageDiv = document.getElementById('error-message');
 
-// 検索ボタンのクリックイベント
+// Search button click event
 searchButton.addEventListener('click', performSearch);
 
-// 検索実行関数
+// Search function
 async function performSearch() {
     const keyword = keywordInput.value.trim();
     const minHearts = parseInt(minHeartsInput.value) || 0;
     const timeRange = parseInt(timeRangeSelect.value) || 24;
 
     if (!keyword) {
-        showError('キーワードを入力してください。');
+        showError('Please enter a keyword');
         return;
     }
 
@@ -68,14 +68,14 @@ async function performSearch() {
                 stack: error.stack
             });
         }
-        showError('検索中にエラーが発生しました: ' + error.message);
+        showError('Error during search: ' + error.message);
     }
 }
 
-// 結果の表示
+// Display results
 function displayResults(casts) {
     if (casts.length === 0) {
-        resultsDiv.innerHTML = '<div class="cast-card">条件に一致する投稿が見つかりませんでした。</div>';
+        resultsDiv.innerHTML = '<div class="cast-card">No posts found matching your criteria.</div>';
         return;
     }
 
@@ -94,24 +94,24 @@ function displayResults(casts) {
             <div class="cast-footer">
                 <div class="cast-stats">
                     <div class="stats-container">
-                        <span class="stats-label">API集計時点の反応数:</span>
+                        <span class="stats-label">Reactions at API fetch:</span>
                         <span class="reaction-counts">
                             <span class="reaction-item">❤️ ${cast.reactions?.likes || 0}</span>
                             <span class="reaction-item">🔄 ${cast.reactions?.recasts || 0}</span>
                         </span>
                     </div>
                 </div>
-                <a href="https://warpcast.com/${encodeURIComponent(cast.author.username)}/${cast.id}"
-                   target="_blank" rel="noopener noreferrer"
+                <a href="https://warpcast.com/${encodeURIComponent(cast.author.username)}/${cast.id}" 
+                   target="_blank" rel="noopener noreferrer" 
                    class="warpcast-link">
-                   Warpcastで最新の反応を見る ↗
+                   View on Warpcast ↗
                 </a>
             </div>
         </div>
     `).join('');
 }
 
-// ユーティリティ関数
+// Utility functions
 function showError(message) {
     console.error('Error:', message);
     errorMessageDiv.textContent = message;
@@ -120,13 +120,13 @@ function showError(message) {
 }
 
 function showLoading() {
-    resultsDiv.innerHTML = '<div class="loading">検索中...</div>';
+    resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
     errorMessageDiv.style.display = 'none';
 }
 
 function formatDate(timestamp) {
     try {
-        return new Date(timestamp).toLocaleString('ja-JP');
+        return new Date(timestamp).toLocaleString('en-US');
     } catch (error) {
         console.error('Date formatting error:', error);
         return 'Invalid Date';
@@ -140,5 +140,5 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
-// 初期値の設定
+// Initial value
 keywordInput.value = 'DeFAI';

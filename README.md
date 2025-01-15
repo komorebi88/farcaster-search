@@ -1,45 +1,54 @@
 # Farcaster Search Tool
 
-Farcasterの投稿を検索するためのツールです。
+A tool for searching Farcaster posts with advanced filtering capabilities.
 
-## 機能
+## Features
 
-- キーワードによる投稿の検索
-- 最小ハート数によるフィルタリング
-- 期間指定（24時間以内、48時間以内、1週間以内）
-- リアルタイムな検索結果の表示
+- Search posts by keyword
+- Filter by minimum number of likes (min_faves)
+- Time range filtering (24h, 48h, 1 week)
+- Real-time search results
+- Direct links to Warpcast
 
-## 技術スタック
+## Tech Stack
 
-- フロントエンド: HTML, CSS, JavaScript
-- バックエンド: Node.js, Express
+- Frontend: HTML, CSS, JavaScript
+- Backend: Node.js, Express
 - API: Neynar API (Farcaster)
+- Deployment:
+  - Frontend: Vercel
+  - Backend: Render
 
-## 開発環境のセットアップ
+## Local Development Setup
 
-1. リポジトリのクローン
+1. Clone the repository
 ```bash
 git clone [repository-url]
 cd farcaster-search
 ```
 
-2. バックエンドの設定
+2. Backend setup
 ```bash
 cd server
 npm install
 ```
 
-3. 環境変数の設定
-`.env`ファイルをserverディレクトリに作成し、以下の内容を設定：
+3. Environment variables
+Create `.env` file in the server directory:
 ```
 NEYNAR_API_KEY=your-api-key
 PORT=3001
 ```
 
-4. サーバーの起動
+4. Start the server
 ```bash
 npm start
 ```
 
-5. フロントエンドへのアクセス
-- `index.html`をブラウザで開く
+5. Access the frontend
+- Open `index.html` in your browser
+
+## Production URLs
+
+- Frontend: https://farcaster-search-pi.vercel.app/
+- Backend API: https://farcaster-search-api.onrender.com/

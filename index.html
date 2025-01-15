@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,34 +12,34 @@
         
         <div class="search-form">
             <div class="form-group">
-                <label for="keyword">キーワード</label>
-                <input type="text" id="keyword" placeholder="例: DeFAI">
+                <label for="keyword">Keyword</label>
+                <input type="text" id="keyword" placeholder="e.g., DeFAI">
             </div>
             
             <div class="form-group">
-                <label for="minHearts">最小ハート数</label>
+                <label for="minHearts">Min_faves</label>
                 <input type="number" id="minHearts" value="10" min="0">
             </div>
             
             <div class="form-group">
-                <label for="timeRange">期間</label>
+                <label for="timeRange">Time Range</label>
                 <select id="timeRange">
-                    <option value="24">24時間以内</option>
-                    <option value="48">48時間以内</option>
-                    <option value="168">1週間以内</option>
+                    <option value="24">Last 24 hours</option>
+                    <option value="48">Last 48 hours</option>
+                    <option value="168">Last week</option>
                 </select>
             </div>
             
-            <button id="searchButton">検索</button>
+            <button id="searchButton">Search</button>
         </div>
 
         <div id="results" class="results">
-            <!-- 結果がここに表示されます -->
+            <!-- Results will be displayed here -->
         </div>
     </div>
 
     <div id="error-message" class="error-message"></div>
 
-    <script type="module" src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

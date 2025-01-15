@@ -4,13 +4,13 @@ import dotenv from 'dotenv';
 import pkg from '@neynar/nodejs-sdk';
 const { NeynarAPIClient } = pkg;
 
-// 環境変数の読み込み
+// Load environment variables
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Neynar APIクライアントの設定
+// Neynar API client setup
 let neynarClient;
 const initializeNeynarClient = () => {
   try {
@@ -26,7 +26,7 @@ const initializeNeynarClient = () => {
   }
 };
 
-// CORSの設定
+// CORS configuration
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST'],
@@ -36,7 +36,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// ヘルスチェックエンドポイント
+// Health check endpoint
 app.get('/health', (req, res) => {
   try {
     const apiKeyExists = !!process.env.NEYNAR_API_KEY;
@@ -57,7 +57,7 @@ app.get('/health', (req, res) => {
   }
 });
 
-// 環境変数の確認エンドポイント（開発用）
+// Debug environment endpoint
 app.get('/debug-env', (req, res) => {
   try {
     res.json({
@@ -74,22 +74,22 @@ app.get('/debug-env', (req, res) => {
   }
 });
 
-// 投稿検索エンドポイント
+// Search endpoint
 app.post('/api/search', async (req, res) => {
   try {
     const { keyword, timeRange, minHearts } = req.body;
     console.log('Received search request:', { keyword, timeRange, minHearts });
 
     if (!keyword) {
-      return res.status(400).json({ error: 'キーワードは必須です' });
+      return res.status(400).json({ error: 'Keyword is required' });
     }
 
-    // 現在時刻からtimeRange時間前までの期間を計算
+    // Calculate time range
     const now = Math.floor(Date.now() / 1000);
     const timeRangeInSeconds = timeRange * 60 * 60;
     const fromTime = now - timeRangeInSeconds;
 
-    // Neynar APIクライアントの初期化と投稿の取得
+    // Initialize Neynar client and fetch posts
     let response;
     try {
       const client = initializeNeynarClient();
@@ -110,17 +110,17 @@ app.post('/api/search', async (req, res) => {
         status: neynarError.status
       });
       return res.status(500).json({
-        error: 'Neynar APIでエラーが発生しました',
+        error: 'Error occurred while fetching from Neynar API',
         details: neynarError.message,
         type: 'NEYNAR_API_ERROR'
       });
     }
 
-    // レスポンスから投稿を取得
+    // Get posts from response
     const casts = response.result.casts || [];
     console.log(`Total casts before filtering: ${casts.length}`);
 
-    // 結果をフィルタリング（時間とハート数）
+    // Filter results by time and hearts
     const filteredCasts = casts.filter(cast => {
       const castDate = new Date(cast.timestamp);
       const castTimestamp = Math.floor(castDate.getTime() / 1000);
@@ -130,7 +130,7 @@ app.post('/api/search', async (req, res) => {
 
     console.log(`Filtered casts: ${filteredCasts.length}`);
 
-    // レスポンスの整形
+    // Format response
     const formattedCasts = filteredCasts.map(cast => ({
       id: cast.hash,
       text: cast.text || '',
@@ -153,14 +153,14 @@ app.post('/api/search', async (req, res) => {
       type: error.name
     });
     res.status(500).json({
-      error: '検索中にエラーが発生しました',
+      error: 'An error occurred during search',
       details: error.message,
       type: error.name
     });
   }
 });
 
-// エラーハンドリングミドルウェア
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server Error:', {
     message: err.message,
@@ -168,14 +168,17 @@ app.use((err, req, res, next) => {
     type: err.name
   });
   res.status(500).json({
-    error: '予期せぬエラーが発生しました',
+    error: 'An unexpected error occurred',
     details: err.message,
     type: err.name
   });
 });
 
-// サーバーの起動前の環境変数チェック
-const checkEnvironment = () => {
+// Server startup
+app.listen(port, () => {
+  console.log(`🚀 Server is running on port ${port}`);
+  
+  // Test environment variables
   const envStatus = {
     NEYNAR_API_KEY: {
       exists: !!process.env.NEYNAR_API_KEY,
@@ -197,19 +200,5 @@ const checkEnvironment = () => {
   }
   if (process.env.PORT !== port.toString()) {
     console.warn(`⚠️ Notice: Using fallback port ${port} (PORT=${process.env.PORT || 'not set'})`);
-  }
-};
-
-// サーバーの起動
-app.listen(port, () => {
-  console.log(`🚀 Server is running on port ${port}`);
-  checkEnvironment();
-  
-  // 試験的にNeynarクライアントの初期化を試みる
-  try {
-    initializeNeynarClient();
-    console.log('✅ Neynar client initialized successfully on startup');
-  } catch (error) {
-    console.error('❌ Failed to initialize Neynar client on startup:', error.message);
   }
 });

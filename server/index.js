@@ -13,16 +13,22 @@ const port = process.env.PORT || 3001;
 // Neynar APIクライアントの設定
 let neynarClient;
 const initializeNeynarClient = () => {
-  if (!process.env.NEYNAR_API_KEY) {
-    throw new Error('NEYNAR_API_KEY environment variable is not set');
+  try {
+    if (!process.env.NEYNAR_API_KEY) {
+      throw new Error('NEYNAR_API_KEY environment variable is not set');
+    }
+    console.log('Initializing Neynar client with key length:', process.env.NEYNAR_API_KEY.length);
+    neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
+    return neynarClient;
+  } catch (error) {
+    console.error('Failed to initialize Neynar client:', error);
+    throw error;
   }
-  neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
-  return neynarClient;
 };
 
 // CORSの設定
 app.use(cors({
-  origin: '*',  // すべてのオリジンを許可
+  origin: '*',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -30,40 +36,50 @@ app.use(cors({
 
 app.use(express.json());
 
-// APIキーの検証関数
-const validateApiKey = () => {
-  if (!process.env.NEYNAR_API_KEY) {
-    throw new Error('Neynar API Key is not configured');
-  }
-  if (process.env.NEYNAR_API_KEY.length < 10) {
-    throw new Error('Invalid Neynar API Key format');
-  }
-};
-
 // ヘルスチェックエンドポイント
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    apiKey: !!process.env.NEYNAR_API_KEY
-  });
+  try {
+    const apiKeyExists = !!process.env.NEYNAR_API_KEY;
+    const apiKeyLength = process.env.NEYNAR_API_KEY ? process.env.NEYNAR_API_KEY.length : 0;
+    
+    res.json({
+      status: 'ok',
+      apiKey: apiKeyExists,
+      apiKeyLength,
+      environment: process.env.NODE_ENV || 'development',
+      serverTime: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
 });
 
 // 環境変数の確認エンドポイント（開発用）
 app.get('/debug-env', (req, res) => {
-  res.json({
-    hasNeynarKey: !!process.env.NEYNAR_API_KEY,
-    keyLength: process.env.NEYNAR_API_KEY ? process.env.NEYNAR_API_KEY.length : 0,
-    port: process.env.PORT
-  });
+  try {
+    res.json({
+      hasNeynarKey: !!process.env.NEYNAR_API_KEY,
+      keyLength: process.env.NEYNAR_API_KEY ? process.env.NEYNAR_API_KEY.length : 0,
+      port: process.env.PORT,
+      nodeEnv: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to get environment variables',
+      details: error.message
+    });
+  }
 });
 
 // 投稿検索エンドポイント
 app.post('/api/search', async (req, res) => {
   try {
-    // APIキーの検証
-    validateApiKey();
-
     const { keyword, timeRange, minHearts } = req.body;
+    console.log('Received search request:', { keyword, timeRange, minHearts });
+
     if (!keyword) {
       return res.status(400).json({ error: 'キーワードは必須です' });
     }
@@ -73,27 +89,21 @@ app.post('/api/search', async (req, res) => {
     const timeRangeInSeconds = timeRange * 60 * 60;
     const fromTime = now - timeRangeInSeconds;
 
-    console.log('Searching with params:', { 
-      keyword, 
-      timeRange, 
-      minHearts, 
-      fromTime,
-      apiKeyStatus: 'Configured'
-    });
-
     // Neynar APIクライアントの初期化と投稿の取得
     let response;
     try {
       const client = initializeNeynarClient();
-      console.log('Neynar client initialized');
+      console.log('Neynar client initialized successfully');
       
       response = await client.searchCasts(keyword, {
         limit: 100,
         viewer_fid: 1
       });
-      console.log('API Response received');
+      console.log('API Response received:', {
+        status: 'success',
+        castsCount: response.result.casts?.length || 0
+      });
     } catch (neynarError) {
-      console.error('Neynar client error:', neynarError);
       console.error('Neynar API Error:', {
         message: neynarError.message,
         stack: neynarError.stack,
@@ -101,7 +111,8 @@ app.post('/api/search', async (req, res) => {
       });
       return res.status(500).json({
         error: 'Neynar APIでエラーが発生しました',
-        details: neynarError.message
+        details: neynarError.message,
+        type: 'NEYNAR_API_ERROR'
       });
     }
 
@@ -136,19 +147,28 @@ app.post('/api/search', async (req, res) => {
 
     res.json({ casts: formattedCasts });
   } catch (error) {
-    console.error('Search error:', error);
-    res.status(500).json({ 
+    console.error('Search error:', {
+      message: error.message,
+      stack: error.stack,
+      type: error.name
+    });
+    res.status(500).json({
       error: '検索中にエラーが発生しました',
-      details: error.message 
+      details: error.message,
+      type: error.name
     });
   }
 });
 
 // エラーハンドリングミドルウェア
 app.use((err, req, res, next) => {
-  console.error('Server Error:', err);
+  console.error('Server Error:', {
+    message: err.message,
+    stack: err.stack,
+    type: err.name
+  });
   res.status(500).json({
-    error: '検索中にエラーが発生しました',
+    error: '予期せぬエラーが発生しました',
     details: err.message,
     type: err.name
   });
@@ -166,7 +186,8 @@ const checkEnvironment = () => {
       value: process.env.PORT,
       fallback: port,
       final: port
-    }
+    },
+    NODE_ENV: process.env.NODE_ENV || 'development'
   };
 
   console.log('Environment Check:', JSON.stringify(envStatus, null, 2));
@@ -183,4 +204,12 @@ const checkEnvironment = () => {
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
   checkEnvironment();
+  
+  // 試験的にNeynarクライアントの初期化を試みる
+  try {
+    initializeNeynarClient();
+    console.log('✅ Neynar client initialized successfully on startup');
+  } catch (error) {
+    console.error('❌ Failed to initialize Neynar client on startup:', error.message);
+  }
 });

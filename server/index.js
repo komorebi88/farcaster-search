@@ -48,14 +48,25 @@ app.post('/api/search', async (req, res) => {
     console.log('Searching with params:', { keyword, timeRange, minHearts, fromTime });
 
     try {
-      // Neynar APIを使用して投稿を取得
-      const response = await neynarClient.searchCasts(keyword, {
-        limit: 100,
-        viewer_fid: 1
-      });
+      console.log('Neynar API Key:', process.env.NEYNAR_API_KEY ? 'Set' : 'Not Set');
+      
+      if (!process.env.NEYNAR_API_KEY) {
+        throw new Error('Neynar API Key is not configured');
+      }
 
-      // レスポンスの詳細をログ出力
-      console.log('API Response structure:', JSON.stringify(response, null, 2));
+      // Neynar APIを使用して投稿を取得
+      try {
+        const response = await neynarClient.searchCasts(keyword, {
+          limit: 100,
+          viewer_fid: 1
+        });
+
+        // レスポンスの詳細をログ出力
+        console.log('API Response structure:', JSON.stringify(response, null, 2));
+      } catch (neynarError) {
+        console.error('Neynar API Error:', neynarError);
+        throw new Error(`Neynar API Error: ${neynarError.message}`);
+      }
 
       // レスポンスから投稿を取得
       const casts = response.result.casts || [];

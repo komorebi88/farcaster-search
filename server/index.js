@@ -11,7 +11,14 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Neynar APIクライアントの設定
-const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
+let neynarClient;
+const initializeNeynarClient = () => {
+  if (!process.env.NEYNAR_API_KEY) {
+    throw new Error('NEYNAR_API_KEY environment variable is not set');
+  }
+  neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
+  return neynarClient;
+};
 
 // CORSの設定
 app.use(cors({
@@ -74,15 +81,19 @@ app.post('/api/search', async (req, res) => {
       apiKeyStatus: 'Configured'
     });
 
-    // Neynar APIを使用して投稿を取得
+    // Neynar APIクライアントの初期化と投稿の取得
     let response;
     try {
-      response = await neynarClient.searchCasts(keyword, {
+      const client = initializeNeynarClient();
+      console.log('Neynar client initialized');
+      
+      response = await client.searchCasts(keyword, {
         limit: 100,
         viewer_fid: 1
       });
       console.log('API Response received');
     } catch (neynarError) {
+      console.error('Neynar client error:', neynarError);
       console.error('Neynar API Error:', {
         message: neynarError.message,
         stack: neynarError.stack,

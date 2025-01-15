@@ -143,11 +143,33 @@ app.use((err, req, res, next) => {
   });
 });
 
+// サーバーの起動前の環境変数チェック
+const checkEnvironment = () => {
+  const envStatus = {
+    NEYNAR_API_KEY: {
+      exists: !!process.env.NEYNAR_API_KEY,
+      length: process.env.NEYNAR_API_KEY ? process.env.NEYNAR_API_KEY.length : 0,
+      preview: process.env.NEYNAR_API_KEY ? `${process.env.NEYNAR_API_KEY.substring(0, 4)}...` : 'not set'
+    },
+    PORT: {
+      value: process.env.PORT,
+      fallback: port,
+      final: port
+    }
+  };
+
+  console.log('Environment Check:', JSON.stringify(envStatus, null, 2));
+
+  if (!process.env.NEYNAR_API_KEY) {
+    console.warn('⚠️ Warning: NEYNAR_API_KEY is not set');
+  }
+  if (process.env.PORT !== port.toString()) {
+    console.warn(`⚠️ Notice: Using fallback port ${port} (PORT=${process.env.PORT || 'not set'})`);
+  }
+};
+
 // サーバーの起動
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log('Environment:', {
-    hasNeynarKey: !!process.env.NEYNAR_API_KEY,
-    port: process.env.PORT
-  });
+  console.log(`🚀 Server is running on port ${port}`);
+  checkEnvironment();
 });

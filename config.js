@@ -1,7 +1,7 @@
 // 環境に応じたAPIエンドポイントの設定
 const API_BASE = {
     development: 'http://localhost:3001/api',
-    production: 'https://farcaster-search-api.onrender.com/api'  // Renderにデプロイする際のURLを仮で設定
+    production: 'https://farcaster-search-api.onrender.com/api'
 };
 
 // 現在の環境がローカル開発環境かどうかを判定

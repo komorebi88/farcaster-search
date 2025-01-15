@@ -14,7 +14,16 @@ const port = process.env.PORT || 3001;
 const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
 // ミドルウェアの設定
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://farcaster-search-pi.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000'
+  ],
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(express.json());
 
 // ヘルスチェックエンドポイント

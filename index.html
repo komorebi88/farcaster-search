@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farcaster Search Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Farcaster Search Tool</h1>
+        
+        <div class="search-form">
+            <div class="form-group">
+                <label for="keyword">キーワード</label>
+                <input type="text" id="keyword" placeholder="例: DeFAI">
+            </div>
+            
+            <div class="form-group">
+                <label for="minHearts">最小ハート数</label>
+                <input type="number" id="minHearts" value="10" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="timeRange">期間</label>
+                <select id="timeRange">
+                    <option value="24">24時間以内</option>
+                    <option value="48">48時間以内</option>
+                    <option value="168">1週間以内</option>
+                </select>
+            </div>
+            
+            <button id="searchButton">検索</button>
+        </div>
+
+        <div id="results" class="results">
+            <!-- 結果がここに表示されます -->
+        </div>
+    </div>
+
+    <div id="error-message" class="error-message"></div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          exclude_assets: 'server/**'
+
+  # Renderはwebhookを使用して自動デプロイを行うため、
+  # GitHub Actionsでの追加の設定は不要です。
+  # Renderのデプロイは、GitHubリポジトリと連携後、
+  # pushをトリガーとして自動的に行われます。

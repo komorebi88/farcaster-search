@@ -123,6 +123,15 @@ button:hover {
 .cast-stats {
     color: #666;
     font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stats-label {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
 }
 
 .warpcast-link {

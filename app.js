@@ -91,10 +91,11 @@ function displayResults(casts) {
             <div class="cast-content">${escapeHtml(cast.text)}</div>
             <div class="cast-footer">
                 <div class="cast-stats">
-                    ❤️ ${cast.reactions?.likes || 0}
-                    🔄 ${cast.reactions?.recasts || 0}
+                    <div class="stats-label">API集計時点:</div>
+                    <div>❤️ ${cast.reactions?.likes || 0}
+                    🔄 ${cast.reactions?.recasts || 0}</div>
                 </div>
-                <a href="https://warpcast.com/${encodeURIComponent(cast.author.username)}/${cast.id}" target="_blank" class="warpcast-link">Warpcastで見る</a>
+                <a href="https://warpcast.com/${encodeURIComponent(cast.author.username)}/${cast.id}" target="_blank" class="warpcast-link">Warpcastで最新の反応を見る ↗</a>
             </div>
         </div>
     `).join('');

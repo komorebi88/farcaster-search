@@ -83,19 +83,29 @@ function displayResults(casts) {
         <div class="cast-card">
             <div class="cast-header">
                 <div class="author-info">
-                    <span class="cast-author">${escapeHtml(cast.author.display_name || cast.author.username)}</span>
-                    <span class="cast-username">@${escapeHtml(cast.author.username)}</span>
+                    <div class="name-container">
+                        <span class="cast-author">${escapeHtml(cast.author.display_name || cast.author.username)}</span>
+                        <span class="cast-username">@${escapeHtml(cast.author.username)}</span>
+                    </div>
+                    <span class="cast-time">${formatDate(cast.timestamp)}</span>
                 </div>
-                <span class="cast-time">${formatDate(cast.timestamp)}</span>
             </div>
             <div class="cast-content">${escapeHtml(cast.text)}</div>
             <div class="cast-footer">
                 <div class="cast-stats">
-                    <div class="stats-label">API集計時点:</div>
-                    <div>❤️ ${cast.reactions?.likes || 0}
-                    🔄 ${cast.reactions?.recasts || 0}</div>
+                    <div class="stats-container">
+                        <span class="stats-label">API集計時点の反応数:</span>
+                        <span class="reaction-counts">
+                            <span class="reaction-item">❤️ ${cast.reactions?.likes || 0}</span>
+                            <span class="reaction-item">🔄 ${cast.reactions?.recasts || 0}</span>
+                        </span>
+                    </div>
                 </div>
-                <a href="https://warpcast.com/${encodeURIComponent(cast.author.username)}/${cast.id}" target="_blank" class="warpcast-link">Warpcastで最新の反応を見る ↗</a>
+                <a href="https://warpcast.com/${encodeURIComponent(cast.author.username)}/${cast.id}"
+                   target="_blank" rel="noopener noreferrer"
+                   class="warpcast-link">
+                   Warpcastで最新の反応を見る ↗
+                </a>
             </div>
         </div>
     `).join('');

@@ -82,20 +82,24 @@ button:hover {
 }
 
 .cast-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 
 .author-info {
     display: flex;
     flex-direction: column;
+    gap: 4px;
+}
+
+.name-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .cast-author {
     font-weight: 600;
-    margin-bottom: 2px;
+    font-size: 1rem;
 }
 
 .cast-username {
@@ -105,7 +109,24 @@ button:hover {
 
 .cast-time {
     color: #666;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+}
+
+.stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reaction-counts {
+    display: flex;
+    gap: 12px;
+}
+
+.reaction-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .cast-content {

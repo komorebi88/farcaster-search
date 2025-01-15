@@ -119,7 +119,30 @@ app.post('/api/search', async (req, res) => {
   }
 });
 
+// 環境変数の確認エンドポイント（開発用）
+app.get('/debug-env', (req, res) => {
+  res.json({
+    hasNeynarKey: !!process.env.NEYNAR_API_KEY,
+    keyLength: process.env.NEYNAR_API_KEY ? process.env.NEYNAR_API_KEY.length : 0,
+    port: process.env.PORT
+  });
+});
+
+// エラーハンドリングミドルウェア
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({
+    error: '検索中にエラーが発生しました',
+    details: err.message,
+    type: err.name
+  });
+});
+
 // サーバーの起動
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  console.log('Environment:', {
+    hasNeynarKey: !!process.env.NEYNAR_API_KEY,
+    port: process.env.PORT
+  });
 });

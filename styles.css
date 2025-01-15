@@ -83,13 +83,24 @@ button:hover {
 
 .cast-header {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 0.5rem;
 }
 
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
 .cast-author {
-    font-weight: 500;
-    margin-right: 0.5rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.cast-username {
+    color: #666;
+    font-size: 0.9rem;
 }
 
 .cast-time {
@@ -98,12 +109,35 @@ button:hover {
 }
 
 .cast-content {
-    margin-bottom: 0.5rem;
+    margin: 0.8rem 0;
+    line-height: 1.5;
+}
+
+.cast-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.8rem;
 }
 
 .cast-stats {
     color: #666;
     font-size: 0.9rem;
+}
+
+.warpcast-link {
+    color: #5c6bc0;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    border: 1px solid #5c6bc0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.warpcast-link:hover {
+    background-color: #5c6bc0;
+    color: white;
 }
 
 .error-message {

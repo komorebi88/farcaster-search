@@ -82,13 +82,19 @@ function displayResults(casts) {
     resultsDiv.innerHTML = casts.map(cast => `
         <div class="cast-card">
             <div class="cast-header">
-                <span class="cast-author">${escapeHtml(cast.author.display_name || cast.author.username)}</span>
+                <div class="author-info">
+                    <span class="cast-author">${escapeHtml(cast.author.display_name || cast.author.username)}</span>
+                    <span class="cast-username">@${escapeHtml(cast.author.username)}</span>
+                </div>
                 <span class="cast-time">${formatDate(cast.timestamp)}</span>
             </div>
             <div class="cast-content">${escapeHtml(cast.text)}</div>
-            <div class="cast-stats">
-                ❤️ ${cast.reactions?.likes || 0} 
-                🔄 ${cast.reactions?.recasts || 0}
+            <div class="cast-footer">
+                <div class="cast-stats">
+                    ❤️ ${cast.reactions?.likes || 0}
+                    🔄 ${cast.reactions?.recasts || 0}
+                </div>
+                <a href="https://warpcast.com/${encodeURIComponent(cast.author.username)}/${cast.id}" target="_blank" class="warpcast-link">Warpcastで見る</a>
             </div>
         </div>
     `).join('');
